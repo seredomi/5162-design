@@ -6,7 +6,7 @@ import { roofConfig } from "../roof/config";
 import { mainFloorConfig } from "./config";
 import { cuboid, polygon } from "@jscad/modeling/src/primitives";
 import { extrudeLinear } from "@jscad/modeling/src/operations/extrusions";
-import { translate, rotateX, rotateZ, rotateY } from "@jscad/modeling/src/operations/transforms";
+import { translate, rotateZ, rotateY } from "@jscad/modeling/src/operations/transforms";
 import { union } from "@jscad/modeling/src/operations/booleans";
 
 export const mainFloor = (): Geom3[] => {

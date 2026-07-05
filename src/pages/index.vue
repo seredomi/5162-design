@@ -276,7 +276,7 @@ onMounted(() => {
       drawMesh: drawCommands.drawMesh,
     },
     rendering: {
-      background: [0.96, 0.96, 0.97, 1], // was [0, 0, 0, 1]
+      background: [0.96, 0.96, 0.97, 1],
       lightDirection: [0.0, 0.0, 1.0],
       lightPosition: [100.0, 100.0, 100.0],
       ambientLightAmount: 0.5,

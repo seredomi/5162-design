@@ -12,19 +12,19 @@ export const basement = (): Geom3[] => {
   const zMid = h / 2;
   const walls: Geom3[] = [];
 
-  // Floor slab
+  // floor
   walls.push(translate([-w / 2, -l / 2, wallT / 2], cuboid({ size: [w, l, wallT] })));
 
-  // Left wall  (x = -w)
+  // east wall  (x = -w)
   walls.push(translate([-w + wallT / 2, -l / 2, zMid], cuboid({ size: [wallT, l, h] })));
 
-  // Right wall  (x = 0)
+  // west wall
   walls.push(translate([-wallT / 2, -l / 2, zMid], cuboid({ size: [wallT, l, h] })));
 
-  // Back wall  (y = -l)
+  // north wall
   walls.push(translate([-w / 2, -l + wallT / 2, zMid], cuboid({ size: [w, wallT, h] })));
 
-  // Front wall  (y = 0)
+  // south wall
   walls.push(translate([-w / 2, -wallT / 2, zMid], cuboid({ size: [w, wallT, h] })));
 
   return [union(walls)];
