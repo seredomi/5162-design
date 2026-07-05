@@ -262,7 +262,11 @@ onMounted(() => {
     // zColor: [0, 0, 0, 1],
   });
 
-  // assemble the options for rendering
+  let cachedRenderEntities: any[] = [];
+  const rebuildRenderEntities = () => {
+    cachedRenderEntities = [...entities, axisOptions(), gridOptions()];
+  };
+  rebuildRenderEntities();
   const renderOptions = () => ({
     camera: state.camera,
     drawCommands: {
@@ -281,7 +285,7 @@ onMounted(() => {
       materialShininess: 1.0,
     },
     // define the visual content
-    entities: [...entities, axisOptions(), gridOptions()],
+    entities: cachedRenderEntities,
   });
 
   // convert HTML events (mouse movement) to viewer changes
