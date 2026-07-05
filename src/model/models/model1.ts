@@ -4,29 +4,30 @@ import { Vec3 } from "@jscad/modeling/src/maths/vec3";
 import { cuboid } from "@jscad/modeling/src/primitives";
 import { translate } from "@jscad/modeling/src/operations/transforms";
 import { union } from "@jscad/modeling/src/operations/booleans";
+import { colorize } from "@jscad/modeling/src/colors";
 
-export function createModel1_Massing(c: Config): Geom3 {
-  // 1. Basement Envelope
-  const basementSize: Vec3 = [c.houseWidth, c.houseLength, c.basementHeight];
-  let basement: Geom3 = cuboid({ size: basementSize });
+export function model1(c: Config): Geom3 {
+  let basement: Geom3 = cuboid({ size: [c.houseWidth, c.houseLength, c.basementHeight] as Vec3 });
   basement = translate([0, 0, c.basementHeight / 2], basement);
 
-  // 2. Main Floor Living Envelope
-  const middleSize: Vec3 = [c.houseWidth, c.houseLength, c.middleFloorHeight];
-  let middleFloor: Geom3 = cuboid({ size: middleSize });
+  let middleFloor: Geom3 = cuboid({
+    size: [c.houseWidth, c.houseLength, c.middleFloorHeight] as Vec3,
+  });
   middleFloor = translate([0, 0, c.basementHeight + c.middleFloorHeight / 2], middleFloor);
 
-  // 3. Simple Roof Gable Representation
   const roofHeight: number = (c.houseWidth / 2) * Math.tan((c.roofPitchAngle * Math.PI) / 180);
-  const roofSize: Vec3 = [
-    c.houseWidth + c.roofOverhang * 2,
-    c.houseLength + c.roofOverhang * 2,
-    roofHeight,
-  ];
-  let roofMass: Geom3 = cuboid({ size: roofSize });
+  let roofMass: Geom3 = cuboid({
+    size: [
+      c.houseWidth + c.roofOverhang * 2,
+      c.houseLength + c.roofOverhang * 2,
+      roofHeight,
+    ] as Vec3,
+  });
+  roofMass = translate([0, 0, c.basementHeight + c.middleFloorHeight + roofHeight / 2], roofMass);
 
-  const roofZ: number = c.basementHeight + c.middleFloorHeight + roofHeight / 2;
-  roofMass = translate([0, 0, roofZ], roofMass);
-
-  return union(basement, middleFloor, roofMass);
+  return union(
+    colorize(c.colors.basement, basement),
+    colorize(c.colors.middleFloor, middleFloor),
+    colorize(c.colors.roofMass, roofMass),
+  );
 }

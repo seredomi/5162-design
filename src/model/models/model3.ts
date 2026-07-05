@@ -3,70 +3,71 @@ import { Config } from "../config";
 import { cuboid, cylinder } from "@jscad/modeling/src/primitives";
 import { rotateY, translate } from "@jscad/modeling/src/operations/transforms";
 import { union } from "@jscad/modeling/src/operations/booleans";
+import { colorize } from "@jscad/modeling/src/colors";
 
-export function createModel3_LogCabinDetails(c: Config): Geom3 {
-  const structuralElements: Geom3[] = [];
-
-  // 1. Programmatic Log Stack Generation (Back Wall Example)
-  const logDiameter: number = c.logRadius * 2;
-  const backWallLogsCount: number = Math.floor(c.middleFloorHeight / logDiameter);
+export function model3(c: Config): Geom3 {
+  // 1. Log Stack
+  const logDiameter = c.logRadius * 2;
+  const backWallLogsCount = Math.floor(c.middleFloorHeight / logDiameter);
+  const logs: Geom3[] = [];
 
   for (let i = 0; i < backWallLogsCount; i++) {
-    let logCylinder: Geom3 = cylinder({
+    let log: Geom3 = cylinder({
       radius: c.logRadius,
       height: c.houseWidth,
       segments: c.logSegments,
     });
-    // Align horizontally along the X axis
-    logCylinder = rotateY(Math.PI / 2, logCylinder);
-
-    const logZ: number = c.basementHeight + i * logDiameter + c.logRadius;
-    const logY: number = c.houseLength / 2; // Placed at rear threshold
-
-    structuralElements.push(translate([0, logY, logZ], logCylinder));
+    log = rotateY(Math.PI / 2, log);
+    const logZ = c.basementHeight + i * logDiameter + c.logRadius;
+    const logY = c.houseLength / 2;
+    logs.push(translate([0, logY, logZ], log));
   }
 
-  // 2. Gentle Stairway from Living Room to Loft
-  const stairWidth = 1.0;
+  // 2. Stairway
+  const stairs: Geom3[] = [];
   const numSteps = 14;
   const stepRise = c.middleFloorHeight / numSteps;
-  const stepRun = 0.28; // Standard run tread width
+  const stepRun = 0.28;
 
   for (let i = 0; i < numSteps; i++) {
-    let step: Geom3 = cuboid({ size: [stairWidth, stepRun, stepRise] });
-
-    // Stagger steps diagonally upward
-    const stepX = -c.houseWidth / 3; // Positioned on side wall
+    let step = cuboid({ size: [1.0, stepRun, stepRise] });
+    const stepX = -c.houseWidth / 3;
     const stepY = -c.houseLength / 4 + i * stepRun;
     const stepZ = c.basementHeight + i * stepRise + stepRise / 2;
-
-    structuralElements.push(translate([stepX, stepY, stepZ], step));
+    stairs.push(translate([stepX, stepY, stepZ], step));
   }
 
-  // 3. Covered Front Porch with Sub-Floor Cross Hatched Skirting
-  const basePorchPlate: Geom3 = cuboid({ size: [c.houseWidth, c.porchWidth, 0.2] });
-  const porchZ: number = c.basementHeight;
-  const porchY: number = -(c.houseLength / 2 + c.porchWidth / 2);
+  // 3. Front Porch
+  const porchZ = c.basementHeight;
+  const porchY = -(c.houseLength / 2 + c.porchWidth / 2);
+  const porchParts: Geom3[] = [
+    translate([0, porchY, porchZ], cuboid({ size: [c.houseWidth, c.porchWidth, 0.2] })),
+    translate(
+      [0, porchY, c.basementHeight / 2],
+      cuboid({ size: [c.houseWidth - 0.1, c.porchWidth - 0.1, c.basementHeight] }),
+    ),
+  ];
 
-  structuralElements.push(translate([0, porchY, porchZ], basePorchPlate));
+  // 4. Rear Deck
+  const deckY = c.houseLength / 2 + c.deckWidth / 2;
+  const deckParts: Geom3[] = [
+    translate([0, deckY, c.basementHeight], cuboid({ size: [c.houseWidth, c.deckWidth, 0.2] })),
+  ];
 
-  // Parametric Skirting Structure underneath the front porch
-  let porchSkirting: Geom3 = cuboid({
-    size: [c.houseWidth - 0.1, c.porchWidth - 0.1, c.basementHeight],
-  });
-  porchSkirting = translate([0, porchY, c.basementHeight / 2], porchSkirting);
-  structuralElements.push(porchSkirting);
+  // 5. Screen Frame
+  const screenY = c.houseLength / 2 + c.deckWidth * 0.75;
+  const screenParts: Geom3[] = [
+    translate(
+      [0, screenY, c.basementHeight + c.middleFloorHeight / 2],
+      cuboid({ size: [c.houseWidth, c.deckWidth / 2, c.middleFloorHeight] }),
+    ),
+  ];
 
-  // 4. Rear Deck (Divided in half for Screened-In area)
-  const deckPlate: Geom3 = cuboid({ size: [c.houseWidth, c.deckWidth, 0.2] });
-  const deckY: number = c.houseLength / 2 + c.deckWidth / 2;
-  structuralElements.push(translate([0, deckY, c.basementHeight], deckPlate));
-
-  // Screened-In Framing Enclosure (occupies rear half of deck footprint)
-  let screenFrame: Geom3 = cuboid({ size: [c.houseWidth, c.deckWidth / 2, c.middleFloorHeight] });
-  const screenY: number = c.houseLength / 2 + c.deckWidth * 0.75;
-  screenFrame = translate([0, screenY, c.basementHeight + c.middleFloorHeight / 2], screenFrame);
-  structuralElements.push(screenFrame);
-
-  return union(...structuralElements);
+  return union(
+    colorize(c.colors.logs, union(...logs)),
+    colorize(c.colors.stairs, union(...stairs)),
+    colorize(c.colors.porch, union(...porchParts)),
+    colorize(c.colors.deckFrame, union(...deckParts)),
+    colorize(c.colors.screenFrame, union(...screenParts)),
+  );
 }

@@ -1,26 +1,36 @@
+import { RGBA } from "@jscad/modeling/src/colors/types";
+
+export type Colors = {
+  // model1
+  basement: RGBA;
+  middleFloor: RGBA;
+  roofMass: RGBA;
+  // model2
+  houseShell: RGBA;
+  chimney: RGBA;
+  // model3
+  logs: RGBA;
+  stairs: RGBA;
+  porch: RGBA;
+  deckFrame: RGBA;
+  screenFrame: RGBA;
+};
+
 export type Config = {
-  // global envelope
   houseWidth: number;
   houseLength: number;
-
-  // floor elevations
   basementHeight: number;
   middleFloorHeight: number;
   loftHeight: number;
-
-  // log cabin constraints
   logRadius: number;
   logSegments: number;
-
-  // roof mechanics
-  roofPitchAngle: number; // in degrees
+  roofPitchAngle: number;
   roofOverhang: number;
-
-  // structural features
   chimneyWidth: number;
   chimneyDepth: number;
   porchWidth: number;
   deckWidth: number;
+  colors: Colors;
 };
 
 export const config: Config = {
@@ -37,4 +47,16 @@ export const config: Config = {
   chimneyDepth: 1.2,
   porchWidth: 2.5,
   deckWidth: 3.0,
+  colors: {
+    basement: [0.45, 0.42, 0.4, 1],
+    middleFloor: [0.72, 0.58, 0.42, 1],
+    roofMass: [0.3, 0.25, 0.22, 1],
+    houseShell: [0.72, 0.58, 0.42, 1],
+    chimney: [0.45, 0.42, 0.4, 1],
+    logs: [0.6, 0.38, 0.18, 1],
+    stairs: [0.5, 0.32, 0.14, 1],
+    porch: [0.55, 0.36, 0.16, 1],
+    deckFrame: [0.48, 0.3, 0.12, 1],
+    screenFrame: [0.7, 0.7, 0.68, 1],
+  },
 };
