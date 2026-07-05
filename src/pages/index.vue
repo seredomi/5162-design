@@ -14,7 +14,6 @@ import { main, getParameterDefinitions } from "./design";
 
 import MainMenu from "../components/MainMenu/index.vue";
 import { UiState } from "../components/MainMenu/ui-state";
-import Parameters from "../components/Parameters/index.vue";
 
 const { rotateX, rotateY, rotateZ } = transforms;
 const { project } = extrusions;
@@ -438,23 +437,6 @@ const onParamChange = (paramValues: any) => {
 
 <template>
   <div id="design" class="w-full h-full"></div>
-  <div class="absolute bottom-2 left-2 dropdown dropdown-top">
-    <div tabindex="0" role="button" class="btn btn-sm btn-outline btn-primary bg-base-100">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-4">
-        <path d="M3 4H21V6H3V4ZM3 11H21V13H3V11ZM3 18H21V20H3V18Z" fill="currentColor"></path>
-      </svg>
-    </div>
-    <div
-      tabindex="0"
-      class="overflow-y-auto dropdown-content z-[1] shadow bg-base-100 p-2 w-max border border-primary"
-    >
-      <Parameters
-        :parameterDefinitions="getParameterDefinitions()"
-        :params="params"
-        v-on:update="onParamChange"
-      />
-    </div>
-  </div>
   <div class="absolute top-2 right-2 dropdown dropdown-end">
     <div tabindex="0" role="button" class="btn btn-sm btn-outline btn-primary bg-base-100">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-4">
