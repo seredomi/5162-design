@@ -11,7 +11,7 @@ export const porch = (): Geom3[] => {
 
   const x = pw / 2;
   const y = 0 - pl / 2; // flush against rear wall, extending outward
-  const z = basementH - t / 2; // sits on top of basement
+  const z = basementH + t / 2; // sits on top of basement
 
   const plate = translate([x, y, z], cuboid({ size: [pw, pl, t] }));
   return [plate];

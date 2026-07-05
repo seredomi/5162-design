@@ -13,7 +13,7 @@ export const deck = (): Geom3[] => {
   // Rear of house is at y = house.l, deck extends beyond that
   const x = -w - dw / 2;
   const y = 0 - dl / 2; // flush against rear wall, extending outward
-  const z = basementH - t / 2; // sits on top of basement
+  const z = basementH + t / 2; // sits on top of basement
 
   const plate = translate([x, y, z], cuboid({ size: [dw, dl, t] }));
   return [plate];
