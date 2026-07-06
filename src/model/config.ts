@@ -9,7 +9,7 @@ export type HouseConfig = {
 
 export const houseConfig: HouseConfig = {
   w: 26,
-  l: 78,
+  l: 82,
   logW: 0.6,
   lowOverhang: 1,
   gutterW: 0.4,

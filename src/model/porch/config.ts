@@ -5,7 +5,7 @@ export type PorchConfig = {
 };
 
 export const porchConfig: PorchConfig = {
-  w: 10,
-  l: 39,
+  w: 8,
+  l: 30,
   t: 1,
 };
