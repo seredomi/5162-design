@@ -9,7 +9,7 @@ export type DeckConfig = {
 export const deckConfig: DeckConfig = {
   w: 8,
   l: 30,
-  t: 1,
+  t: 0.5,
   screenedL: 16,
   screenedH: 10,
 };

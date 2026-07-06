@@ -5,5 +5,5 @@ export type LoftConfig = {
 
 export const loftConfig: LoftConfig = {
   l: 60,
-  lOffset: 3,
+  lOffset: 2,
 };
