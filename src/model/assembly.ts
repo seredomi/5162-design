@@ -5,12 +5,22 @@ import { mainFloor } from "./mainFloor";
 import { colorize } from "@jscad/modeling/src/colors";
 import { sphere } from "@jscad/modeling/src/primitives";
 import { translate } from "@jscad/modeling/src/operations/transforms";
+import { loft } from "./loft";
+import { roof } from "./roof";
+import { Color } from "@jscad/modeling/src/geometries/types";
 
 const lekha = translate([-5, -25, 15], sphere({ radius: 5 }));
 
+const brown: Color = [1, 0.5, 0, 1];
+const green: Color = [0.5, 1, 0, 1];
+
 export const assembly = () => {
   return [
-    colorize([0, 100, 100, 0.6], lekha),
-    colorize([1, 1, 255, 0.5], [...basement(), ...deck(), ...porch(), ...mainFloor()]),
+    // colorize([0, 100, 100, 0.6], lekha),
+    colorize(brown, [...basement()]),
+    colorize(brown, [...deck(), ...porch()]),
+    colorize(brown, [...basement(), ...mainFloor()]),
+    colorize(brown, [...loft()]),
+    colorize(green, [...roof()]),
   ];
 };
