@@ -6,7 +6,7 @@ import { roofConfig } from "../roof/config";
 import { mainFloorConfig } from "./config";
 import { cuboid, polygon } from "@jscad/modeling/src/primitives";
 import { extrudeLinear } from "@jscad/modeling/src/operations/extrusions";
-import { translate, rotateZ, rotateY } from "@jscad/modeling/src/operations/transforms";
+import { translate, rotateZ, rotateY, rotateX } from "@jscad/modeling/src/operations/transforms";
 import { union } from "@jscad/modeling/src/operations/booleans";
 
 export const mainFloor = (): Geom3[] => {
@@ -23,14 +23,16 @@ export const mainFloor = (): Geom3[] => {
   const lrY1 = -porchL;
   const gapL = l - porchL - livingRoomL;
 
+  const steepRad = (steepA * Math.PI) / 180;
+
   const walls: Geom3[] = [];
 
-  // ── Floor slab (house footprint + living room) ─────────────────────────────
+  // -- floor --
 
-  // Main house floor
+  // main house floor
   walls.push(translate([-w / 2, -l / 2, z0 + wallT / 2], cuboid({ size: [w, l, wallT] })));
 
-  // Living room floor
+  // living room floor
   walls.push(
     translate(
       [livingRoomW / 2, (lrY0 + lrY1) / 2, z0 + wallT / 2],
@@ -38,42 +40,63 @@ export const mainFloor = (): Geom3[] => {
     ),
   );
 
-  // ── House walls ────────────────────────────────────────────────────────────
+  // -- walls --
 
-  // Left wall  (x = -w)
+  // east wall
   walls.push(translate([-w + wallT / 2, -l / 2, zMid], cuboid({ size: [wallT, l, h] })));
 
-  // Back wall  (y = -l)
-  walls.push(translate([-w / 2, -l + wallT / 2, zMid], cuboid({ size: [w, wallT, h] })));
+  // north wall (with triangular peak)
+  const mainPeakH = w / 2 / Math.tan(steepRad);
 
-  // Front wall  (y = 0)
-  walls.push(translate([-w / 2, -wallT / 2, zMid], cuboid({ size: [w, wallT, h] })));
+  const northWallProfile = polygon({
+    points: [
+      [0, 0],
+      [w, 0],
+      [w, h],
+      [w / 2, h + mainPeakH],
+      [0, h],
+    ],
+  });
 
-  // Right wall, porch segment  (x = 0, y: 0 → -porchL)
-  walls.push(translate([-wallT / 2, -porchL / 2, zMid], cuboid({ size: [wallT, porchL, h] })));
-
-  // Right wall, gap segment  (x = 0, y: lrY0 → -l)
   walls.push(
     translate(
-      [-wallT / 2, -(porchL + livingRoomL + gapL / 2), zMid],
+      [0, -l, z0],
+      rotateY(Math.PI, rotateX(-Math.PI / 2, extrudeLinear({ height: wallT }, northWallProfile))),
+    ),
+  );
+
+  // south wall
+  walls.push(translate([-w / 2, -wallT / 2, zMid], cuboid({ size: [w, wallT, h] })));
+
+  // west wall, porch segment
+  walls.push(
+    translate(
+      [-wallT / 2, -porchL / 2 - wallT / 2, zMid],
+      cuboid({ size: [wallT, porchL + wallT, h] }),
+    ),
+  );
+
+  // west wall, gap segment
+  walls.push(
+    translate(
+      [-wallT / 2, -(porchL + livingRoomL + gapL / 2 - wallT), zMid],
       cuboid({ size: [wallT, gapL, h] }),
     ),
   );
 
-  // ── Living room walls ──────────────────────────────────────────────────────
+  // -- living room walls --
 
-  // Connecting wall  (y = -porchL)
+  // south wall
   walls.push(
     translate([livingRoomW / 2, lrY1 - wallT / 2, zMid], cuboid({ size: [livingRoomW, wallT, h] })),
   );
 
-  // Far wall  (y = lrY0)
+  // north wall
   walls.push(
     translate([livingRoomW / 2, lrY0 + wallT / 2, zMid], cuboid({ size: [livingRoomW, wallT, h] })),
   );
 
-  // 5-sided porch-facing wall  (x = +livingRoomW)
-  const steepRad = (steepA * Math.PI) / 180;
+  // gable wall
   const peakH = livingRoomL / 2 / Math.tan(steepRad);
 
   const pentProfile = polygon({
@@ -88,7 +111,7 @@ export const mainFloor = (): Geom3[] => {
 
   walls.push(
     translate(
-      [livingRoomW + wallT, -porchL, z0],
+      [livingRoomW, -porchL, z0],
       rotateY(-Math.PI / 2, rotateZ(-Math.PI / 2, extrudeLinear({ height: wallT }, pentProfile))),
     ),
   );
